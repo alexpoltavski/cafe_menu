@@ -1,17 +1,17 @@
 services:
-api:
-  build: .
-  container_name: menu
-  external_links: 
-    - db-postgres:db-postgres
-  volumes:
-    - ./app:/app
-  ports:
-    - "80:80"
-database:
-  image: "postgres"
-  container_name: db-postgres
-  env_file:
-    - database.env
-  ports:
-    - "5432:5432"
+  api:
+    build: .
+    container_name: menu
+    external_links: 
+      - db-postgres:db-postgres
+    volumes:
+      - ./app:/app
+    ports:
+      - "80:80"
+  database:
+    image: "postgres"
+    container_name: db-postgres
+    env_file:
+      - database.env
+    ports:
+      - "5432:5432"

@@ -1,15 +1,19 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 import os
-#from dotenv import load_dotenv, find_dotenv
-
-#load_dotenv(find_dotenv())
 
 #SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/menu_app"
-SQLALCHEMY_DATABASE_URL = "postgresql://"+os.getenv("DB_USER")+":"+os.getenv("DB_PASSWORD") +"@"+os.getenv("DB_HOST")+":"+os.getenv("DB_PORT")+"/menu_app"
-
+SQLALCHEMY_DATABASE_URL = engine.URL.create(
+    drivername = "postgresql",
+    username = os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    host=os.getenv("DB_HOST"),
+    port=os.getenv("DB_PORT"),
+    database="menu_app"
+)
+print(SQLALCHEMY_DATABASE_URL)
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 if not database_exists(engine.url):
     create_database(engine.url)
