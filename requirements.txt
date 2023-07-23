@@ -1,0 +1,6 @@
+greenlet==2.0.2 ; python_version >= "3.10" and python_version < "4.0" and (platform_machine == "win32" or platform_machine == "WIN32" or platform_machine == "AMD64" or platform_machine == "amd64" or platform_machine == "x86_64" or platform_machine == "ppc64le" or platform_machine == "aarch64")
+psycopg2==2.9.6 ; python_version >= "3.10" and python_version < "4.0"
+sqlalchemy-utils==0.41.1 ; python_version >= "3.10" and python_version < "4.0"
+sqlalchemy==2.0.19 ; python_version >= "3.10" and python_version < "4.0"
+typing-extensions==4.7.1 ; python_version >= "3.10" and python_version < "4.0"
+uuid==1.30 ; python_version >= "3.10" and python_version < "4.0"
