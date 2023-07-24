@@ -6,8 +6,9 @@ from data import crud, models, schemas
 from data.db import SessionLocal, engine
 
 
-models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
+models.Base.metadata.create_all(bind=engine)
+
 
 def get_db():
     db = SessionLocal()
@@ -16,13 +17,22 @@ def get_db():
     finally:
         db.close()
 
+@app.get("/")
+def root():
+    return "SuCCESS"
+
 # Menu endpoints
 @app.get("/api/v1/menus", response_model=list[schemas.Menu])
 def read_menus(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    menus = crud.get_menus(db, skip=skip,limit=limit)
+    db_menus = crud.get_menus(db, skip=skip,limit=limit)
+    menus=[]
+    for i in db_menus:
+        submenus_count = crud.get_menu_submenus_count(db=db,menu_id=i.id)
+        dishes_count = crud.get_menu_dishes_count(db=db,menu_id=i.id)
+        menus.append(schemas.Menu(title=i.title, description=i.description, id=i.id, submenus_count=submenus_count, dishes_count=dishes_count))
     return menus
 
-@app.post("/api/v1/menus", response_model=schemas.Menu,status_code=201)
+@app.post("/api/v1/menus", status_code=201)
 def create_menu(menu: schemas.MenuCreate, db: Session = Depends(get_db)):
     return crud.create_menu(db=db, menu=menu)
 
@@ -54,7 +64,7 @@ def read_submenus(menu_id: uuid.UUID,skip: int = 0, limit: int = 100, db: Sessio
         submenus.append(schemas.SubMenu(title=i.title, description=i.description, id=i.id,menu_id=i.menu_id,dishes_count=dishes_count))
     return submenus
 
-@app.post("/api/v1/menus/{menu_id}/submenus", response_model=schemas.SubMenu,status_code=201)
+@app.post("/api/v1/menus/{menu_id}/submenus", status_code=201)
 def create_submenu(menu_id: uuid.UUID,submenu: schemas.SubMenuCreate, db: Session = Depends(get_db)):
     return crud.create_submenu(db=db, submenu=submenu, menu_id=menu_id)
 
@@ -75,12 +85,12 @@ def delete_submenu(submenu_id: uuid.UUID, db: Session = Depends(get_db)):
     return crud.delete_submenu(db=db, submenu_id=submenu_id)
 
 # Dishes endpoints
-@app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes", response_model=list[schemas.Dish])
+@app.get("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes")
 def read_dishes(submenu_id: uuid.UUID, skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     dishes = crud.get_dishes(db, submenu_id=submenu_id, skip=skip,limit=limit)
     return dishes
 
-@app.post("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes", response_model=schemas.Dish,status_code=201)
+@app.post("/api/v1/menus/{menu_id}/submenus/{submenu_id}/dishes", status_code=201)
 def create_dish(dish: schemas.DishCreate, submenu_id: uuid.UUID, db: Session = Depends(get_db)):
     return crud.create_dish(db=db, dish=dish, submenu_id=submenu_id)
 

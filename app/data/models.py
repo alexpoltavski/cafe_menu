@@ -6,6 +6,7 @@ import uuid
 from .db import Base
 
 
+
 class Menu(Base):
     __tablename__ = "menus"
 
